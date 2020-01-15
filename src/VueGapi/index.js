@@ -62,7 +62,11 @@ export default {
       login: (res) => {
         return Vue.prototype.$gapi.getGapiClient()
           .then(() => {
-            login().then(() => { res() })
+            login().then(() => {
+              if (typeof res === 'function') {
+                res()
+              }
+            })
           })
       },
       refreshToken: async function () {
@@ -72,7 +76,11 @@ export default {
       logout: (res) => {
         return Vue.prototype.$gapi.getGapiClient()
           .then(() => {
-            logout().then(() => { res() })
+            logout().then(() => {
+              if (typeof res === 'function') {
+                res()
+              }
+            })
           })
       },
       listenUserSignIn: (callback) => {

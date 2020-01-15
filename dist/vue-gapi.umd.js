@@ -1169,7 +1169,9 @@
         login: function login(res) {
           return Vue.prototype.$gapi.getGapiClient().then(function () {
             _login().then(function () {
-              res();
+              if (typeof res === 'function') {
+                res();
+              }
             });
           });
         },
@@ -1205,7 +1207,9 @@
         logout: function logout(res) {
           return Vue.prototype.$gapi.getGapiClient().then(function () {
             _logout().then(function () {
-              res();
+              if (typeof res === 'function') {
+                res();
+              }
             });
           });
         },
