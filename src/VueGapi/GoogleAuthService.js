@@ -149,6 +149,19 @@ export default class GoogleAuthService {
     })
   }
 
+  disconnect (event) {
+    if (!this.authInstance) throw new Error('gapi not initialized');
+    const this$1 = this;
+    return new Promise((res, rej) => {
+      this$1.authInstance.disconnect()
+        .then(function () {
+          this$1._clearStorage();
+          this$1.authenticated = false;
+          res()
+        })
+    })
+  }
+
   /**
    * Will determine if the login token is valid using localStorage
    *

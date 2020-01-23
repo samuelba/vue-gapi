@@ -1016,6 +1016,20 @@ function () {
         });
       });
     }
+  }, {
+    key: "disconnect",
+    value: function disconnect(event) {
+      if (!this.authInstance) throw new Error('gapi not initialized');
+      var this$1 = this;
+      return new Promise(function (res, rej) {
+        this$1.authInstance.disconnect().then(function () {
+          this$1._clearStorage();
+
+          this$1.authenticated = false;
+          res();
+        });
+      });
+    }
     /**
      * Will determine if the login token is valid using localStorage
      *
@@ -1116,7 +1130,8 @@ var _grantOfflineAccess = googleAuthService.grantOfflineAccess,
     getUserData = googleAuthService.getUserData,
     _refreshToken = googleAuthService.refreshToken,
     _isSignedIn = googleAuthService.isSignedIn,
-    _listenUserSignIn = googleAuthService.listenUserSignIn;
+    _listenUserSignIn = googleAuthService.listenUserSignIn,
+    _disconnect = googleAuthService.disconnect;
 var VueGapi = {
   install: function install(Vue, clientConfig) {
     Vue.gapiLoadClientPromise = null;
@@ -1208,6 +1223,15 @@ var VueGapi = {
       logout: function logout(res) {
         return Vue.prototype.$gapi.getGapiClient().then(function () {
           _logout().then(function () {
+            if (typeof res === 'function') {
+              res();
+            }
+          });
+        });
+      },
+      disconnect: function disconnect(res) {
+        return Vue.prototype.$gapi.getGapiClient().then(function () {
+          _disconnect().then(function () {
             if (typeof res === 'function') {
               res();
             }
