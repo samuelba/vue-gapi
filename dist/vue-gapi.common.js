@@ -7,6 +7,10 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var SecureLS = _interopDefault(require('secure-ls'));
+
 function _typeof(obj) {
   if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
     _typeof = function (obj) {
@@ -813,6 +817,11 @@ function loadGAPIScript(gapiUrl) {
 
 var gapiPromise = loadGAPIScript('https://apis.google.com/js/api.js');
 
+var ls = new SecureLS({
+  encodingType: "aes",
+  isCompression: false
+});
+
 var GoogleAuthService =
 /*#__PURE__*/
 function () {
@@ -867,7 +876,7 @@ function () {
      * @param { object } profile
      *  Default is null and if not passed it will be null this is the google user profile object
      *
-     * @fires localStorage.setItem
+     * @fires ls.set
      *
      */
 
@@ -875,17 +884,17 @@ function () {
     key: "_setStorage",
     value: function _setStorage(authResult) {
       var profile = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-      localStorage.setItem('gapi.access_token', authResult.access_token);
-      localStorage.setItem('gapi.id_token', authResult.id_token);
-      localStorage.setItem('gapi.expires_at', this._expiresAt(authResult));
+      ls.set('gapi.access_token', authResult.access_token);
+      ls.set('gapi.id_token', authResult.id_token);
+      ls.set('gapi.expires_at', this._expiresAt(authResult));
 
       if (profile) {
-        localStorage.setItem('gapi.id', profile.getId());
-        localStorage.setItem('gapi.full_name', profile.getName());
-        localStorage.setItem('gapi.first_name', profile.getGivenName());
-        localStorage.setItem('gapi.last_name', profile.getFamilyName());
-        localStorage.setItem('gapi.image_url', profile.getImageUrl());
-        localStorage.setItem('gapi.email', profile.getEmail());
+        ls.set('gapi.id', profile.getId());
+        ls.set('gapi.full_name', profile.getName());
+        ls.set('gapi.first_name', profile.getGivenName());
+        ls.set('gapi.last_name', profile.getFamilyName());
+        ls.set('gapi.image_url', profile.getImageUrl());
+        ls.set('gapi.email', profile.getEmail());
       }
     }
     /**
@@ -897,22 +906,22 @@ function () {
      *
      * @access Private
      *
-     * @fires localStorage.removeItem
+     * @fires ls.remove
      *
      */
 
   }, {
     key: "_clearStorage",
     value: function _clearStorage() {
-      localStorage.removeItem('gapi.access_token');
-      localStorage.removeItem('gapi.id_token');
-      localStorage.removeItem('gapi.expires_at');
-      localStorage.removeItem('gapi.id');
-      localStorage.removeItem('gapi.full_name');
-      localStorage.removeItem('gapi.first_name');
-      localStorage.removeItem('gapi.last_name');
-      localStorage.removeItem('gapi.image_url');
-      localStorage.removeItem('gapi.email');
+      ls.remove('gapi.access_token');
+      ls.remove('gapi.id_token');
+      ls.remove('gapi.expires_at');
+      ls.remove('gapi.id');
+      ls.remove('gapi.full_name');
+      ls.remove('gapi.first_name');
+      ls.remove('gapi.last_name');
+      ls.remove('gapi.image_url');
+      ls.remove('gapi.email');
     }
   }, {
     key: "_setOfflineAccessCode",
@@ -927,7 +936,7 @@ function () {
     key: "_setSession",
     value: function _setSession(response) {
       var profile = this.authInstance.currentUser.get().getBasicProfile();
-      var authResult = response.Zi;
+      var authResult = this.authInstance.currentUser.get().getAuthResponse(true);
 
       this._setStorage(authResult, profile);
 
@@ -1027,7 +1036,7 @@ function () {
   }, {
     key: "isAuthenticated",
     value: function isAuthenticated() {
-      var expiresAt = JSON.parse(localStorage.getItem('gapi.expires_at'));
+      var expiresAt = parseInt(ls.get('gapi.expires_at'));
       return new Date().getTime() < expiresAt;
     }
     /**
@@ -1088,15 +1097,15 @@ function () {
     key: "getUserData",
     value: function getUserData() {
       return {
-        id: localStorage.getItem('gapi.id'),
-        firstName: localStorage.getItem('gapi.first_name'),
-        lastName: localStorage.getItem('gapi.last_name'),
-        fullName: localStorage.getItem('gapi.full_name'),
-        email: localStorage.getItem('gapi.email'),
-        imageUrl: localStorage.getItem('gapi.image_url'),
-        expiresAt: localStorage.getItem('gapi.expires_at'),
-        accessToken: localStorage.getItem('gapi.access_token'),
-        idToken: localStorage.getItem('gapi.id_token')
+        id: ls.get('gapi.id'),
+        firstName: ls.get('gapi.first_name'),
+        lastName: ls.get('gapi.last_name'),
+        fullName: ls.get('gapi.full_name'),
+        email: ls.get('gapi.email'),
+        imageUrl: ls.get('gapi.image_url'),
+        expiresAt: ls.get('gapi.expires_at'),
+        accessToken: ls.get('gapi.access_token'),
+        idToken: ls.get('gapi.id_token')
       };
     }
   }]);

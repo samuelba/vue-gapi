@@ -1,3 +1,6 @@
+import SecureLS from "secure-ls";
+const ls = new SecureLS({ encodingType: "aes", isCompression: false });
+
 export default class GoogleAuthService {
   constructor () {
     this.authenticated = this.isAuthenticated();
@@ -47,21 +50,21 @@ export default class GoogleAuthService {
    * @param { object } profile
    *  Default is null and if not passed it will be null this is the google user profile object
    *
-   * @fires localStorage.setItem
+   * @fires ls.set
    *
    */
   _setStorage (authResult, profile = null) {
-    localStorage.setItem('gapi.access_token', authResult.access_token);
-    localStorage.setItem('gapi.id_token', authResult.id_token);
-    localStorage.setItem('gapi.expires_at', this._expiresAt(authResult));
+    ls.set('gapi.access_token', authResult.access_token);
+    ls.set('gapi.id_token', authResult.id_token);
+    ls.set('gapi.expires_at', this._expiresAt(authResult));
 
     if (profile) {
-      localStorage.setItem('gapi.id', profile.getId());
-      localStorage.setItem('gapi.full_name', profile.getName());
-      localStorage.setItem('gapi.first_name', profile.getGivenName());
-      localStorage.setItem('gapi.last_name', profile.getFamilyName());
-      localStorage.setItem('gapi.image_url', profile.getImageUrl());
-      localStorage.setItem('gapi.email', profile.getEmail())
+      ls.set('gapi.id', profile.getId());
+      ls.set('gapi.full_name', profile.getName());
+      ls.set('gapi.first_name', profile.getGivenName());
+      ls.set('gapi.last_name', profile.getFamilyName());
+      ls.set('gapi.image_url', profile.getImageUrl());
+      ls.set('gapi.email', profile.getEmail())
     }
   }
 
@@ -74,19 +77,19 @@ export default class GoogleAuthService {
    *
    * @access Private
    *
-   * @fires localStorage.removeItem
+   * @fires ls.remove
    *
    */
   _clearStorage () {
-    localStorage.removeItem('gapi.access_token');
-    localStorage.removeItem('gapi.id_token');
-    localStorage.removeItem('gapi.expires_at');
-    localStorage.removeItem('gapi.id');
-    localStorage.removeItem('gapi.full_name');
-    localStorage.removeItem('gapi.first_name');
-    localStorage.removeItem('gapi.last_name');
-    localStorage.removeItem('gapi.image_url');
-    localStorage.removeItem('gapi.email')
+    ls.remove('gapi.access_token');
+    ls.remove('gapi.id_token');
+    ls.remove('gapi.expires_at');
+    ls.remove('gapi.id');
+    ls.remove('gapi.full_name');
+    ls.remove('gapi.first_name');
+    ls.remove('gapi.last_name');
+    ls.remove('gapi.image_url');
+    ls.remove('gapi.email')
   }
 
   _setOfflineAccessCode (authResult) {
@@ -99,7 +102,7 @@ export default class GoogleAuthService {
 
   _setSession (response) {
     const profile = this.authInstance.currentUser.get().getBasicProfile();
-    const authResult = response.Zi;
+    const authResult = this.authInstance.currentUser.get().getAuthResponse(true);
     this._setStorage(authResult, profile);
     this.authenticated = true
   }
@@ -157,7 +160,7 @@ export default class GoogleAuthService {
    *
    */
   isAuthenticated () {
-    const expiresAt = JSON.parse(localStorage.getItem('gapi.expires_at'));
+    const expiresAt = parseInt(ls.get('gapi.expires_at'));
     return new Date().getTime() < expiresAt
   }
 
@@ -211,15 +214,15 @@ export default class GoogleAuthService {
    */
   getUserData () {
     return {
-      id: localStorage.getItem('gapi.id'),
-      firstName: localStorage.getItem('gapi.first_name'),
-      lastName: localStorage.getItem('gapi.last_name'),
-      fullName: localStorage.getItem('gapi.full_name'),
-      email: localStorage.getItem('gapi.email'),
-      imageUrl: localStorage.getItem('gapi.image_url'),
-      expiresAt: localStorage.getItem('gapi.expires_at'),
-      accessToken: localStorage.getItem('gapi.access_token'),
-      idToken: localStorage.getItem('gapi.id_token')
+      id: ls.get('gapi.id'),
+      firstName: ls.get('gapi.first_name'),
+      lastName: ls.get('gapi.last_name'),
+      fullName: ls.get('gapi.full_name'),
+      email: ls.get('gapi.email'),
+      imageUrl: ls.get('gapi.image_url'),
+      expiresAt: ls.get('gapi.expires_at'),
+      accessToken: ls.get('gapi.access_token'),
+      idToken: ls.get('gapi.id_token')
     }
   }
 }
