@@ -12,6 +12,7 @@ export default class GoogleAuthService {
     this.login = this.login.bind(this);
     this.refreshToken = this.refreshToken.bind(this);
     this.logout = this.logout.bind(this);
+    this.disconnect = this.disconnect.bind(this);
     this.isAuthenticated = this.isAuthenticated.bind(this);
     this.isSignedIn = this.isSignedIn.bind(this);
     this.listenUserSignIn = this.listenUserSignIn.bind(this)
@@ -141,6 +142,19 @@ export default class GoogleAuthService {
     const this$1 = this;
     return new Promise((res, rej) => {
       this$1.authInstance.signOut()
+        .then(function () {
+          this$1._clearStorage();
+          this$1.authenticated = false;
+          res()
+        })
+    })
+  }
+
+  disconnect (event) {
+    if (!this.authInstance) throw new Error('gapi not initialized');
+    const this$1 = this;
+    return new Promise((res, rej) => {
+      this$1.authInstance.disconnect()
         .then(function () {
           this$1._clearStorage();
           this$1.authenticated = false;
