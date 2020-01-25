@@ -1,5 +1,5 @@
 import SecureLS from "secure-ls";
-const ls = new SecureLS({ encodingType: "aes", isCompression: false });
+const ls = new SecureLS({ encodingType: "aes", isCompression: true });
 
 export default class GoogleAuthService {
   constructor () {

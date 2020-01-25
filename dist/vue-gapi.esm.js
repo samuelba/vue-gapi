@@ -813,7 +813,7 @@ var gapiPromise = loadGAPIScript('https://apis.google.com/js/api.js');
 
 var ls = new SecureLS({
   encodingType: "aes",
-  isCompression: false
+  isCompression: true
 });
 
 var GoogleAuthService =

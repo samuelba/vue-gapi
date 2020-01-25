@@ -819,7 +819,7 @@
 
   var ls = new SecureLS({
     encodingType: "aes",
-    isCompression: false
+    isCompression: true
   });
 
   var GoogleAuthService =
