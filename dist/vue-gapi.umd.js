@@ -9,9 +9,11 @@
   (global = global || self, factory(global.VueGapi = {}, global.SecureLS));
 }(this, (function (exports, SecureLS) { 'use strict';
 
-  SecureLS = SecureLS && SecureLS.hasOwnProperty('default') ? SecureLS['default'] : SecureLS;
+  SecureLS = SecureLS && Object.prototype.hasOwnProperty.call(SecureLS, 'default') ? SecureLS['default'] : SecureLS;
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -105,6 +107,25 @@
       var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
       var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
 
+      function define(obj, key, value) {
+        Object.defineProperty(obj, key, {
+          value: value,
+          enumerable: true,
+          configurable: true,
+          writable: true
+        });
+        return obj[key];
+      }
+
+      try {
+        // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+        define({}, "");
+      } catch (err) {
+        define = function define(obj, key, value) {
+          return obj[key] = value;
+        };
+      }
+
       function wrap(innerFn, outerFn, self, tryLocsList) {
         // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
         var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
@@ -178,14 +199,14 @@
       var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype);
       GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
       GeneratorFunctionPrototype.constructor = GeneratorFunction;
-      GeneratorFunctionPrototype[toStringTagSymbol] = GeneratorFunction.displayName = "GeneratorFunction"; // Helper for defining the .next, .throw, and .return methods of the
+      GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"); // Helper for defining the .next, .throw, and .return methods of the
       // Iterator interface in terms of a single ._invoke method.
 
       function defineIteratorMethods(prototype) {
         ["next", "throw", "return"].forEach(function (method) {
-          prototype[method] = function (arg) {
+          define(prototype, method, function (arg) {
             return this._invoke(method, arg);
-          };
+          });
         });
       }
 
@@ -201,10 +222,7 @@
           Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
         } else {
           genFun.__proto__ = GeneratorFunctionPrototype;
-
-          if (!(toStringTagSymbol in genFun)) {
-            genFun[toStringTagSymbol] = "GeneratorFunction";
-          }
+          define(genFun, toStringTagSymbol, "GeneratorFunction");
         }
 
         genFun.prototype = Object.create(Gp);
@@ -221,7 +239,7 @@
         };
       };
 
-      function AsyncIterator(generator) {
+      function AsyncIterator(generator, PromiseImpl) {
         function invoke(method, arg, resolve, reject) {
           var record = tryCatch(generator[method], generator, arg);
 
@@ -232,14 +250,14 @@
             var value = result.value;
 
             if (value && _typeof(value) === "object" && hasOwn.call(value, "__await")) {
-              return Promise.resolve(value.__await).then(function (value) {
+              return PromiseImpl.resolve(value.__await).then(function (value) {
                 invoke("next", value, resolve, reject);
               }, function (err) {
                 invoke("throw", err, resolve, reject);
               });
             }
 
-            return Promise.resolve(value).then(function (unwrapped) {
+            return PromiseImpl.resolve(value).then(function (unwrapped) {
               // When a yielded Promise is resolved, its final value becomes
               // the .value of the Promise<{value,done}> result for the
               // current iteration.
@@ -257,7 +275,7 @@
 
         function enqueue(method, arg) {
           function callInvokeWithMethodAndArg() {
-            return new Promise(function (resolve, reject) {
+            return new PromiseImpl(function (resolve, reject) {
               invoke(method, arg, resolve, reject);
             });
           }
@@ -294,8 +312,9 @@
       // AsyncIterator objects; they just return a Promise for the value of
       // the final result produced by the iterator.
 
-      exports.async = function (innerFn, outerFn, self, tryLocsList) {
-        var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList));
+      exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+        if (PromiseImpl === void 0) PromiseImpl = Promise;
+        var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl);
         return exports.isGeneratorFunction(outerFn) ? iter // If outerFn is a generator, return the full iterator.
         : iter.next().then(function (result) {
           return result.done ? result.value : iter.next();
@@ -459,7 +478,7 @@
 
 
       defineIteratorMethods(Gp);
-      Gp[toStringTagSymbol] = "Generator"; // A Generator should always return itself as the iterator object when the
+      define(Gp, toStringTagSymbol, "Generator"); // A Generator should always return itself as the iterator object when the
       // @@iterator function is called on it. Some browsers' implementations of the
       // iterator prototype chain incorrectly implement this, causing the Generator
       // object to not be returned from this call. This ensures that doesn't happen.
@@ -822,9 +841,7 @@
     isCompression: true
   });
 
-  var GoogleAuthService =
-  /*#__PURE__*/
-  function () {
+  var GoogleAuthService = /*#__PURE__*/function () {
     function GoogleAuthService() {
       _classCallCheck(this, GoogleAuthService);
 
@@ -970,9 +987,7 @@
     }, {
       key: "refreshToken",
       value: function () {
-        var _refreshToken = _asyncToGenerator(
-        /*#__PURE__*/
-        regenerator.mark(function _callee() {
+        var _refreshToken = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
           var GoogleUser, authResult;
           return regenerator.wrap(function _callee$(_context) {
             while (1) {
@@ -1199,9 +1214,7 @@
           });
         },
         refreshToken: function () {
-          var _refreshToken2 = _asyncToGenerator(
-          /*#__PURE__*/
-          regenerator.mark(function _callee() {
+          var _refreshToken2 = _asyncToGenerator( /*#__PURE__*/regenerator.mark(function _callee() {
             return regenerator.wrap(function _callee$(_context) {
               while (1) {
                 switch (_context.prev = _context.next) {
