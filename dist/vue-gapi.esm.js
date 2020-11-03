@@ -1173,6 +1173,9 @@ var VueGapi = {
                 var error = err.error;
                 console.error('Failed to initialize gapi: %s (status=%s, code=%s)', error.message, error.status, error.code, err);
               }
+
+              gapi.auth = false;
+              reject();
             });
           });
         } else {
@@ -1190,7 +1193,7 @@ var VueGapi = {
           if (Vue.gapiLoadClientPromise && Vue.gapiLoadClientPromise.status === 0) {
             return resolve(window.gapi);
           } else {
-            resolveAuth2Client(resolve);
+            resolveAuth2Client(resolve, reject);
           }
         });
       },
